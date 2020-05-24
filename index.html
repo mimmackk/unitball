@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <title>p-Norm Unit Ball</title>
+  <meta name="description" content="Exploration of the mathematical problem of graphing the p-norm unit ball in 3 dimensions.">
+  <meta name="author" content="Kayden Mimmack">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="p-Norm Unit Ball" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="Exploration of the mathematical problem of graphing the p-norm unit ball in 3 dimensions." />
+  <meta property="og:url" content="https://mimmackk.github.io/unitball/index.html" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/mimmackk/unitball/master/head.jpg" />
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src='https://cdn.plot.ly/plotly-1.54.1.min.js'></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+<article class="content-wrapper">
+  <h1>Graphing the \(p\)-Norm Unit Ball in 3 Dimensions</h1>
+
+  <section>
+    <h2>Introduction</h2>
+    <h3>What's the \(p\)-norm?</h3>
+    <p>If \(\vec x\) is in \(\mathbb R^n\), i.e., \(\vec x = (x_1, x_2, \ldots, x_n)\), then the \(p\)-norm of \(\vec x\), denoted \(\|\vec x\|_p\), is defined for \(p \geq 1\) by</p>
+    <p class="math">
+      \[
+      \|\vec x\|_p = \left(\sum_{k = 1}^n |x_k|^p\right)^{1/p}
+      \]
+    </p>
+    <p>Perhaps a more intiuitive way of thinking of this is, if \(\vec x\) is in \(\mathbb R^3\) for example, then:</p>
+    <p class="math">
+      \[
+      \begin{align*}
+      \|\vec x\|_1 &= |x_1|^{\phantom{1}} + |x_2|^{\phantom{1}} + |x_3|^{\phantom{1}}
+      \\
+      \|\vec x\|_2^2 &= |x_1|^2 + |x_2|^2 + |x_3|^2
+      \\
+      \|\vec x\|_3^3 &= |x_1|^3 + |x_2|^3 + |x_3|^3
+      \\
+      &\ \,\vdots
+      \\
+      \|\vec x\|_p^p &= |x_1|^p + |x_2|^p + |x_3|^p
+      \end{align*}
+      \]
+    </p>
+
+    <h3>What's the unit ball?</h3>
+
+    <p>The unit ball describes the set of all points whose distance from the origin is 1. So if our distance is induced by the \(p\)-norm, then the unit ball is the collection of \(\vec x\) such that \(\|\vec x\|_p = 1\). The unit ball is often denoted \(\mathcal B\):</p>
+    <p class="math">
+      \[
+      \mathcal B = \left\{\vec x : \|\vec x\| = 1\right\}.
+      \]
+    </p>
+    <p>A common exercise in introductory analysis is graphing the \(p\)-norm unit ball in 2 dimensions for various values of \(p\).</p>
+
+    <img class="center" src="img/animation2d.gif" alt="Animated 2D Unit Ball">
+
+    <h3>Visualizations of the unit ball in 3 dimensions are significantly less common.</h3>
+
+    <p>Why?</p>
+
+    <p>Well, a mathematician would say that once we understand an object in 1 dimension and in 2 dimensions, then we understand it in <em>all</em> dimensions, and so examining \(\mathbb R^3\) is redundant, at best. I say pictures are fun and interesting, and nobody learning a new mathematical concept has ever wished for <em>fewer</em> pictures. So, here's what the 3-dimensional unit ball looks like for various values of \(p\):</p>
+
+    <img class="center" src="img/animation3d.gif" alt="Animated 3D Unit Ball">
+
+    <p>Perhaps one reason the 3D unit ball isn't visualized often is that it's a pain in the ass to graph.</p>
+
+    <p>Sure—graphing a sphere isn't hard, graphing a cube isn't hard, and graphing an octahedron isn't hard. But apparently graphing all three and every visual representation between them with one function is the opposite of "not hard."</p>
+
+    <p>In 2D, you can just dust off the trusty 'ol polar coords, wipe your hands, and call it a day. But wow, is this <em>not</em> trivial in 3D.</p>
+
+    <p>I'm going to walk through my problem solving process below—I'll talk about each method I tried, why I thought it would work, why it didn't work, and how I eventually solved this problem (if problems in computer science can ever truly be considered "solved").</p>
+  </section>
+
+  <section>
+    <h2>Method 1: Compute \(z\) from a \((x, y)\) Mesh Grid</h2>
+
+    <p>With a lot of 3D graphing problems, what makes the most sense is to generate a grid of evenly-spaced \(x\) and \(y\) values, then to calculate \(z\) for every \((x, y)\) pair. In this way, you end up with a set of \((x, y, z)\) points which, once connected to their nearest neighbors, form a surface.</p>
+
+    <img class="center" src="img/gridtosurface.png" alt="Mesh Grid to Surface">
+
+    <p>Approaching this problem this way turns out to be a <em>terrible</em> idea. If you're smarter than me, then you can probably already see why. But since I'm not smarter than me, I had to barrel through this whole mess first to figure it out.</p>
+
+    <p>First, we need to figure out a formula for \(z\) that depends on \(x\) and \(y\). Since we're graphing the unit ball for variable \(p\), our points \((x, y, z)\) are going to have to satisfy \(\|(x, y, z)\|_p = 1\). So, we pull out the definition of the \(p\)-norm and do some minor rearrangements.</p>
+    <p class="math">
+      \[
+      \begin{align*}
+      \|(x, y, z)\|_p^p &= |x|^p + |y|^p + |z|^p
+      \\
+      1^p &= |x|^p + |y|^p + |z|^p
+      \\
+      1 &= |x|^p + |y|^p + |z|^p
+      \\
+      |z|^p &= 1 - |x|^p - |y|^p
+      \\
+      z &= \pm \big(1 - |x|^p - |y|^p\big)^{1/p}
+      \end{align*}
+      \]
+    </p>
+
+    <p>Great!! So, the plan is to generate a grid of \(x\) and \(y\) values ranging from -1 to 1, then calculate the positive \(z\)-value for any \((x, y)\) pair. If some \((x,y)\) pair is outside of our boundary (i.e., \(x\) and \(y\) are large enough that there's no \(z\) such that \(|x|^p + |y|^p + |z|^p = 1\)), then we'll just let the \(z\) value for that point be NaN, and our graphing utility will ignore it. We expect our points will look something like this (in the \(p = 2\) case):</p>
+
+    <img class="center" src="img/method1idea.png" alt="Idea Behind Method 1">
+
+    <p>Then when we're done, we'll just duplicate our valid points with negative \(z\)-values to fill out the bottom hemisphere.</p>
+
+    <pre><code># Import necessary libraries
+import numpy as np
+import plotly.graph_objects as go
+import ipywidgets as widgets
+
+smoothness = 6      # Any integer geq 3
+contour_density = 4 # Any integer geq 1 and leq smoothness
+
+# Ensure our graphs pick up corners & contour lines correctly
+num_steps = 2**smoothness + 1
+jump      = 2**(smoothness - contour_density)</code></pre>
+
+    <pre><code>def coords(p):
+
+    # Generate (x,y) mesh grid
+    x = np.linspace(-1, 1, num_steps)
+    x, y = np.meshgrid(x, x)
+
+    # Initialize z full of NaN values
+    z = np.full_like(x, np.nan)
+
+    # Compute z at valid points
+    for i, j in np.ndindex(x.shape):
+        temp_z = 1 - np.abs(x[i, j])**p - np.abs(y[i, j])**p
+        if temp_z >= 0:
+            z[i, j] = temp_z**(1/p)
+
+    # Throw on the negative z-values
+    x = np.vstack((x,  np.flipud(x)))
+    y = np.vstack((y,  np.flipud(y)))
+    z = np.vstack((z, -np.flipud(z)))
+
+    return (x, y, z)</code></pre>
+
+    <pre><code># Generate figure
+X, Y, Z = coords(p)
+fig = go.Figure(go.Surface(
+    x=X,
+    y=Y,
+    z=Z,
+    colorscale='Viridis',
+    showscale=False
+    ))
+fig.update_layout(showlegend=False)</code></pre>
+
+    <img class="center" src="img/m1surfaces.png" alt="Graphs of Method 1">
+
+    <p>That . . . <em>almost</em> worked. The graph seems accurate wherever it exists—the problem is the places where it doesn't. \(p = 100\) is almost comical.</p>
+
+    <h3>Method 1.1: A Bad Addendum to a Bad Idea</h3>
+
+    <p>For a bit, I was pretty obstinate about the fact it half-worked.</p>
+
+    <p>The unit ball is perfectly symmetrical with regards to each of the axes, so I figured if I layered a bunch of <em>half-working</em> things over each other in the right way, I could probably get something that <em>full-worked!</em></p>
+
+    <pre><code>def coords_patchwork(p):
+
+    X, Y, Z = coords(p)
+
+    # Patch together our X, Y, Z symmetrically to cover the gaps
+    X = np.hstack((X, Z, Y))
+    Y = np.hstack((Y, X, Z))
+    Z = np.hstack((Z, Y, X))
+
+    return (X, Y, Z)</code></pre>
+
+    <p>. . . That's not how it worked.</p>
+
+    <img class="center" src="img/m11surfaces.png" alt="Graphs of Method 1.1">
+
+    <p>Look at this.</p>
+
+    <p>Look at \(p = 100\).</p>
+
+    <p>Look at the surface of \(p = 1\).</p>
+
+    <img class="center" src="img/m11p1.png" alt="Surface of p = 1 for method 1.1">
+
+    <p>It's ugly, it's choppy, it's glitchy—it's disgusting. The edges of the patchworked surfaces are causing that jittery image for low \(p\), and for large \(p\), open gaps are still showing up around the edges. </p>
+
+    <h3> Why isn't it working?</h3>
+
+    <p>There's two main problems occuring here. One is due to the way our graphing utility draws surfaces, and the other has to do with the points we're ignoring (the NaN \(z\)-values).</p>
+
+    <p>To understand the first problem, we need to understand how 3D surfaces are drawn. Most 3D plotting functions take \((x, y, z)\) data points in the format of three 2-dimensional arrays:</p>
+
+    <img class="center" src="img/arrayslayout.png" alt="Arrays Layout">
+
+    <p>In the above image, our graphing utility would read these three arrays as a collection of six total points:</p>
+
+    <img class="center" src="img/arraystopoints.png" alt="Arrays to data points">
+
+    <p>Lines are drawn between points that lie adjacent to each other in these arrays, <em>not</em> based on which \((x, y, z)\) values are closest to each other in space.</p>
+
+    <img class="center" src="img/arraystolines.png" alt="Connections between points">
+
+    <p>Because of the bordering NaNs in our \(z\) array, and because of the way that we appended the negative points to our original arrays, the graphing utility is unable to connect all of our points and (mostly) settles for making two disjoint surfaces instead. Sometimes it can draw some borders, but it's unable to draw lines between every border point.</p>
+
+    <p>However, even if we were able to solve the point connection issues with the arrays, there would still be other problems. </p>
+
+    <p>This method doesn't capture the curvature of edges and corners well for high values of \(p\). Since we're working with a finite-sized mesh, our step size can only be so small. Consider an \(x\)-\(z\) cross-section of \(p = 10\) as an example, for \(y\) very close to but not equal to 0:</p>
+
+    <img class="center" src="img/cutoff.png" alt="p=10 data cutoff">
+
+    <p>In this image, since \(y\) is just a little larger than 0, we don't pick up the point \(x = 1\), since \(1^p + \varepsilon^p > 1\), and so no \(z\)-value exists such that \((1, \varepsilon, z)\) is on the surface of our unit ball. So, we jump from NaN to a very large \(z\) value when we increment \(x\), completely skipping past the exact curvature we want to visualize. </p>
+
+    <p>So, no matter our step size, after a certain \(p\)-value, we're not picking up any of the fine detail of our edges. We're always chopping off essential information, making entire sides of our object flat when they shouldn't be. Take the case \(p = 1.5\), for example: the corners of our object around \(z = 0\) <em>should</em> be pretty pointy. But even if we've solved our connectivity issue, we would still end up with some object that looks like it's been filed flat around its equator. This method loses detail exactly where we need it most.</p>
+
+    <h3>Next step?</h3>
+
+    <p>So, apparently plotting surfaces is like laying shingles: it has to be done in a systematic fashion. We can't just toss down points in any order we want—we need to move methodically through space, connecting points of our surface as we progress. Moreover, we want the same granularity in the \(z\) direction as in the \(x\) and \(y\) directions.</p>
+
+    <p>This calls for something parametric. Time to roll up the sleeves and break out every vector calc student's worst nightmare.</p>
+  </section>
+
+  <section>
+    <h2>Method 2: Spherical Coordinates</h2>
+
+    <p>If \(\varphi\) is the vertical angle of a point from the posive \(z\)-axis, \(\theta\) is the horizontal angle from the positive \(x\)-axis, and \(r\) describes the distance from our point to the origin, then any point \((x, y, z)\) can be equivalently described with spherical coordinates \((\varphi, \theta, r)\):</p>
+
+    <img class="center" src="img/spherical.png" alt="Spherical Coordinates">
+
+    <p class="math">
+      \[
+      \begin{align*}
+      x &= r\sin\varphi\cos\theta \\
+      y &= r\sin\varphi\sin\theta \\
+      z &= r\cos\varphi
+      \end{align*}
+      \]
+    </p>
+
+    <p>Parametrically generating a surface plot isn't that different from non-parametrically generating one. Instead of creating a mesh grid of \((x, y)\) values, we create a mesh grid of \((\theta, \varphi)\) values. We find an expression for \(r\) based on \(\theta\) and \(\varphi\) and then transform our \(\theta\) and \(\varphi\) arrays into \(x\), \(y\), and \(z\) arrays by the above equations. In this way, we'll move down our surface in \(\varphi\)-bands, where for each fixed value of \(\varphi\), we lay down points in a counterclockwise loop around our surface by varying \(\theta\).</p>
+
+    <p>So, now all we need is an expression for \(r\).</p>
+
+    <p class="math">
+      \[
+      \begin{align*}
+      1 &= |x|^p + |y|^p + |z|^p\\
+      1 &= |r\sin\varphi\cos\theta|^p + |r\sin\varphi\sin\theta|^p + |r\cos\varphi|^p\\
+      1 &= r^p\left(\sin^p\varphi\cdot|\cos\theta|^p + \sin^p\varphi\cdot|\sin\theta|^p + |\cos\varphi|^p\right) &\big(|\sin\varphi| = \sin\varphi \textrm{ for }\varphi\in [0,  \pi]\big)\\
+      r^p &= \frac{1}{\sin^p\varphi\cdot|\cos\theta|^p + \sin^p\varphi\cdot|\sin\theta|^p + |\cos\varphi|^p} \\
+      r^p &= \frac{1}{|\cos\varphi|^p + \sin^p\varphi\cdot\big(|\cos\theta|^p + |\sin\theta|^p\big)} \\
+      r &= \frac{1}{\big(|\cos\varphi|^p + \sin^p\varphi\cdot\big(|\cos\theta|^p + |\sin\theta|^p\big)\big)^{1/p}}
+      \end{align*}
+      \]
+    </p>
+
+    <p>Now that we have an \(r\) for every \(\varphi\) and \(\theta\), we can easily convert to Cartesian and get our \(x\), \(y\), and \(z\) points.</p>
+
+    <pre><code>def coords_spherical(p):
+
+    # Grid of phi and theta values
+    theta = np.linspace(0, np.pi * 2, num_steps)
+    phi   = np.linspace(0, np.pi,     num_steps)
+
+    theta, phi = np.meshgrid(theta, phi)
+
+    r = (np.abs(np.cos(phi))**p + np.sin(phi)**p * (np.abs(np.cos(theta))**p
+    + np.abs(np.sin(theta))**p))**(-1/p)
+
+    # Convert from spherical to Cartesian
+    x = r * np.sin(phi) * np.cos(theta)
+    y = r * np.sin(phi) * np.sin(theta)
+    z = r * np.cos(phi)
+
+    return (x, y, z)</code></pre>
+
+    <img class="center" src="img/m2surfaces.png" alt="Graphs of Method 1">
+
+    <p>Awesome! Who would've thought—spherical coordinates are perferct for graphing spheres!</p>
+
+    <p>Except . . . we start running into major issues with large \(p\). Check out \(p = 100\): the edges look strangely curly and serrated, when it should really resemble a soft-edged cube.</p>
+
+    <h3>What's going on?</h3>
+
+    <p>My first thought was that maybe we were encountering numerical rounding errors with sine and cosine. I tried bumping up the number of steps in the mesh grid and switching to a symbolic library, but even this doesn't fix the problem: it actually makes it more pronounced.</p>
+
+    <p>Instead, the issue becomes clear when we look at the \(\varphi\)-bands for \(p = 100\), which essentially form the skeleton of our surface.</p>
+
+    <img class="center" src="img/sphericalskeleton.png" alt="Skeleton of p = 100 for spherical coords">
+
+    <p>Oh.</p>
+
+    <p>Bands of fixed \(\varphi\) do not form visually level \(z\)-bands. If we could achieve infinite smoothness, then we would have an accurate picture, since it's all the same object mathematically. But visually, choosing our bands in this way makes for weird, wobbly edges when we lay down our surface. So spherical <em>approximations</em> to the unit ball fail pretty badly, not in a mathematical sense, but in a visual sense, for large \(p\).</p>
+
+    <p>If we want an accurate visual estimation, we need straight edges to look like straight edges and corners to look like corners. We did a fine job in the \(\theta\) direction, (equivalently the \(x\)-\(y\) direction)—we don't need to change what's happening there. It's the \(z\) direction that's causing issues.</p>
+  </section>
+
+  <section>
+    <h2>Method 3: Cylindrical Coordinates</h2>
+
+    <p>Since we want visually level \(z\) bands, let's try ranging \(z\) from -1 to 1 and working with cylindrical coordinates, eliminating our \(\varphi\) problem while keeping everything good we've gained by using \(\theta\).</p>
+
+    <img class="center" src="img/cylindrical.png" alt="Cylindrical Coordinates">
+
+    <p class="math">
+      \[
+      \begin{align*}
+      x &= r\cos\theta \\
+      y &= r\sin\theta \\
+      z &= z \\
+      \end{align*}
+      \]
+    </p>
+
+    <p>So, we'll generate our \(z\) values on their own, generate \(\theta\) values from \(0\) to \(2\pi\), then calculate \(r\) based on \(\theta\) and \(z\):</p>
+
+    <p class="math">
+      \[
+      \begin{align*}
+      1 &= |r\cos\theta|^p + |r\sin\theta|^p + |z|^p \\
+      1 &= r^p\big(|\cos\theta|^p + |\sin\theta|^p\big) + |z|^p \\
+      r^p &= \frac{1 - |z|^p}{|\cos\theta|^p + |\sin\theta|^p} \\
+      r &= \left(\frac{1 - |z|^p}{|\cos\theta|^p + |\sin\theta|^p}\right)^{1/p} \\
+      \end{align*}
+      \]
+    </p>
+
+    <p>To finish, we just convert back to Cartesian coordinates.</p>
+
+    <pre><code>def coords_cylindrical(p):
+
+    # Generate theta and z values
+    theta = np.linspace(0, np.pi * 2, num_steps)
+    z     = np.linspace(1, -1,        num_steps)
+
+    theta, z = np.meshgrid(theta, z)
+
+    r = ((1 - np.abs(z)**p) / (np.abs(np.cos(theta))**p
+    + np.abs(np.sin(theta))**p))**(1/p)
+
+    # Convert to Cartesian
+    x = r * np.cos(theta)
+    y = r * np.sin(theta)
+
+    return (x, y, z)</code></pre>
+
+    <img class="center" src="img/m3surfaces.png" alt="Graphs of Method 3">
+
+    <p>Oh my God. Why does it have a weird spot on top of it?</p>
+
+    <p>I mean, that worked <em>better</em> than spherical coordinates did—it's legitimately <em>almost</em> good. Let's see what's going on with the skeletons.</p>
+
+    <img class="center" src="img/cylindricalskeleton.png" alt="Skeletons for cylindrical coords">
+
+    <p>Okay. What's happening here is we're running into one of the same issues we had with the first method, just in a slightly different format. While before we had trouble picking up \(z\) values close to 0, now we're struggling to capture them close to 1 and -1. This results in these sort of cap-less objects for large \(p\), where our surface leaps and stretches from a faraway band defined by \(z = 1 - \varepsilon\) to cluster and pile up at the point \((x, y, z) = (0, 0, 1)\).</p>
+
+    <p>But, our previous problem of the wobbly edges <em>has</em> been fixed! We just need a way to make our skeleton look more uniform. Ideally, the horizontal bands of our skeleton will look equally spaced <em>along</em> the surface of the unit ball, rather than simply being equally spaced in the \(z\)-direction.</p>
+  </section>
+
+  <section>
+    <h2>Method 4: Cylindrical-ish with a Sneaky Spherical Trick</h2>
+
+    <p>Since the problem is that our \(z\) values are evenly-spaced, let's make them <em>not</em> evenly-spaced.</p>
+
+    <p>Let's begin with a bit of a false start in spherical coordinates. We'll pop in, steal some useful information, and drag it back to the cylindrical camp to continue our operations there.</p>
+
+    <p>Let's generate equispaced \(\varphi\) values from \(0\) to \(\pi\), as before. But for each \(\varphi\) value, instead of computing points based on varying \(\theta\) to construct a full \(\varphi\) band, we'll only look at a single point. If we set \(\theta = 0\) (equivalently, \(y = 0\)), then we can generate a set of \(z\) values based on \(\varphi\).</p>
+
+    <img class="center" src="img/trick1.png" alt="Trick: Spherical Portion">
+
+    <p>Some of these \(z\)-values are going to be very close together (or the same, due to rounding), and some will be very far apart, but the overall effect should be that they appear (basically) uniformly spaced along the surface of our object when paired with their \(\varphi\) value. </p>
+
+    <p>The \(r_*\) we refer to below is a function of \(\varphi\) and is refering to the distance from a point \((x, 0, z)\) on our surface to the origin. We compute it to find our \(z\)-values.</p>
+
+    <p class="math">
+      \[
+      \begin{align*}
+      1 &= |x|^p + |y|^p + |z|^p\\
+      1 &= |r_*\sin\varphi\cos(0)|^p + |r_*\sin\varphi\sin(0)|^p + |r_*\cos\varphi|^p\\
+      1 &= r_*^p\sin^p\varphi + r_*^p|\cos\varphi|^p \\
+      r_*^p &= \frac{1}{\sin^p\varphi + |\cos\varphi|^p} \\
+      r_* &= \frac{1}{\big(\sin^p\varphi + |\cos\varphi|^p\big)^{1/p}} \\
+      \end{align*}
+      \]
+    </p>
+
+    <p>So, \(z\) is given for each \(\varphi\) by</p>
+
+    <p class="math">
+      \[
+      \begin{align*}
+      z &= r_*\cos\varphi = \frac{\cos\varphi}{\big(\sin^p\varphi + |\cos\varphi|^p\big)^{1/p}}
+      \end{align*}
+      \]
+    </p>
+
+    <p>Now that we have our \(z\)-values, we return to cylindrical coordinates. We plug in our formula for \(z\) and solve for \(x\) and \(y\) as before to get bands at equal \(z\)-values.</p>
+
+    <img class="center" src="img/trick2.png" alt="Trick: Cylindrical Portion">
+
+    <p>We're going to leave \(z\) in terms of \(\varphi\) for now, so that rounding errors with \(z\)'s of essentially the same size won't give us \(x\) and \(y\) values that are the same too. By keeping things in terms of \(\varphi\), we should be able to retain that distinction.</p>
+
+    <p>Note that the \(r\) below is different from \(r_*\): this \(r\) refers to the distance from any point \((x, y, z)\) to the \(z\)-axis. </p>
+
+    <p class="math">
+      \[
+      \begin{align*}
+      1 &= |x|^p + |y|^p + |z|^p \\
+      1 &= |r\cos\theta|^p + |r\sin\theta|^p + \left|\frac{\cos\varphi}{\big(\sin^p\varphi + |\cos\varphi|^p\big)^{1/p}}\right|^p\\
+      1 &= r^p|\cos\theta|^p + r^p|\sin\theta|^p + \frac{|\cos\varphi|^p}{\sin^p\varphi + |\cos\varphi|^p}\\
+      r^p\big(|\cos\theta|^p + |\sin\theta|^p\big) &= 1 - \frac{|\cos\varphi|^p}{\sin^p\varphi + |\cos\varphi|^p}\\
+      r^p\big(|\cos\theta|^p + |\sin\theta|^p\big) &= \frac{\sin^p\varphi}{\sin^p\varphi + |\cos\varphi|^p}\\
+      r^p &= \frac{\sin^p\varphi}{\big(\sin^p\varphi + |\cos\varphi|^p\big)\big(|\sin\theta|^p + |\cos\theta|^p\big)}\\
+      r &= \frac{\sin\varphi}{\big(\sin^p\varphi + |\cos\varphi|^p\big)^{1/p}\big(|\sin\theta|^p + |\cos\theta|^p\big)^{1/p}}
+      \end{align*}
+      \]
+    </p>
+
+    <p>So now, we can plug in this \(r\) for our \(x\) and \(y\) values, keeping \(z\) from our earlier computation, and get the points that define our surface:</p>
+
+    <p class="math">
+      \[
+      \begin{align*}
+      x &= \frac{\sin\varphi}{\big(\sin^p\varphi + |\cos\varphi|^p\big)^{1/p}}\cdot\frac{\cos\theta}{\big(|\sin\theta|^p + |\cos\theta|^p\big)^{1/p}} \\
+      y &= \frac{\sin\varphi}{\big(\sin^p\varphi + |\cos\varphi|^p\big)^{1/p}}\cdot\frac{\sin\theta}{\big(|\sin\theta|^p + |\cos\theta|^p\big)^{1/p}} \\
+      z &= \frac{\cos\varphi}{\big(\sin^p\varphi + |\cos\varphi|^p\big)^{1/p}} \\
+      \end{align*}
+      \]
+    </p>
+
+    <pre><code>def coords_trick(p):
+
+    theta = np.linspace(0, np.pi * 2, num_steps)
+    phi   = np.linspace(0, np.pi,     num_steps)
+
+    theta, phi = np.meshgrid(theta, phi)
+
+    rho = lambda x : (np.abs(np.sin(x))**p + np.abs(np.cos(x))**p)**(-1/p)
+
+    # Generate Cartesian points
+    x = np.sin(phi) * rho(phi) * np.cos(theta) * rho(theta)
+    y = np.sin(phi) * rho(phi) * np.sin(theta) * rho(theta)
+    z = np.cos(phi) * rho(phi)
+
+    return (x, y, z)</code></pre>
+
+    <img class="center" src="img/m4surfaces.png" alt="Graphs of Method 4">
+
+    <p>Beautiful! Absolutely stunning! Check out our skeletons:</p>
+
+    <img class="center" src="img/trickskeleton.png" alt="Skeletons for trick method">
+
+    <p>Perfect! </p>
+
+    <p>We've finally found a way to graph the 3D unit ball in a way that's visually accurate for all valid values of p. Experiment with an interactive version below:</p>
+
+    <div class='interactive'>
+      \(p = \) <input id="number" type="number" min="0.5" max="999" value = 2 step="any"></p></span>
+    	<div id="plot-container"><div id='plot'></div></div>
+    </div>
+
+  </section>
+
+  <section>
+    <h2>Appendix</h2>
+
+    <p>Final Python functions for 2D and 3D unit balls (on <a href="https://github.com/mimmackk/mini-math-scripts/blob/master/unitball/unitball.py">Github</a>):</p>
+
+    <pre><code>import numpy as np
+import plotly.graph_objects as go
+
+def unitball3d(p, smoothness = 6):
+  # Odd number in order to pick up edges in z-direction
+  num_steps = 2**smoothness + 1
+
+  # Generate theta, phi mesh grid
+  theta = np.linspace(0, np.pi * 2, num_steps)
+  phi   = np.linspace(0, np.pi,     num_steps)
+
+  theta, phi = np.meshgrid(theta, phi)
+
+  rho = lambda x : (np.abs(np.sin(x))**p + np.abs(np.cos(x))**p)**(-1/p)
+
+  # Generate Cartesian points
+  x = np.sin(phi) * rho(phi) * np.cos(theta) * rho(theta)
+  y = np.sin(phi) * rho(phi) * np.sin(theta) * rho(theta)
+  z = np.cos(phi) * rho(phi)
+
+  # Generate figure
+  fig = go.Figure(go.Surface(x=x,
+    y=y,
+    z=z,
+    colorscale='Viridis',
+    showscale=False
+    ))
+  fig.update_layout(showlegend=False, height=600)
+
+  fig.show()
+
+def unitball2d(p, smoothness = 8):
+  # Odd number in order to pick up edges
+  num_steps = 2**smoothness + 1
+
+  # Polar coordinates
+  theta = np.linspace(0, np.pi * 2, num_steps)
+  r = (np.abs(np.sin(theta))**p + np.abs(np.cos(theta))**p)**(-1/p)
+
+  # Convert to Cartesian
+  x = r * np.cos(theta)
+  y = r * np.sin(theta)
+
+  # Generate figure
+  fig = go.Figure(go.Scatter(x=x, y=y, mode='lines'))
+
+  # Graph styling
+  fig.update_layout(
+    showlegend=False,
+    width=500,
+    height=500,
+    yaxis = dict(
+      scaleanchor = "x",
+      scaleratio = 1
+    ),
+    plot_bgcolor = '#fff',
+  )
+  fig.update_xaxes(showgrid=False, zerolinecolor='Grey', showticklabels=False)
+  fig.update_yaxes(showgrid=False, zerolinecolor='Grey', showticklabels=False)
+
+  fig.show()</code></pre>
+
+    <p>As a quick note, you could take advantage of the symmetry of this problem a lot more than I did here. We don't actually need to calculate \(x,y\) values for \(\theta \in [0, 2\pi]\); we only need to take \(\theta\) up to \(\pi/4\). We can then intelligently stack our resulting \(x\) and \(y\) values to fill out the entire \(x\)-\(y\) plane (similarly for \(z\) and \(\varphi\)). When I gave this a try, though, on my system at least, this didn't turn out to be any faster. Since we're not working with very many data points to begin with (we don't want to make our graph too slow, and we only need so much resolution to accurately visualize our object), it took longer for my system to do all the necessary gluing-together than to let numpy do its efficient large-matrix computations.</p>
+
+    <p>By Kayden Mimmack, 2019</p>
+
+  </section>
+</article>
+<script type="text/javascript" src="live.js"></script>
+</body>
+</html>
