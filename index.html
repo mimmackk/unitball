@@ -73,9 +73,9 @@
 
     <img class="center" src="img/animation3d.gif" alt="Animated 3D Unit Ball">
 
-    <p>Perhaps one reason the 3D unit ball isn't visualized often is that it's a true pain to graph.</p>
+    <p>Perhaps one reason the 3D unit ball isn't visualized often is that it's a pain in the ass to graph.</p>
 
-    <p>Sure—graphing a sphere isn't hard, graphing a cube isn't hard, and graphing an octahedron isn't hard. But apparently graphing all three and every visual representation between them with one function is the opposite of "not hard."</p>
+    <p>Sure—graphing a sphere isn't hard, graphing a cube isn't hard, and graphing an octahedron isn't hard. But apparently graphing all three and every continuous visual representation between them with one function is the opposite of "not hard."</p>
 
     <p>In 2D, you can just dust off the trusty 'ol polar coords, wipe your hands, and call it a day. But wow, is this <em>not</em> trivial in 3D.</p>
 
@@ -89,7 +89,7 @@
 
     <img class="center" src="img/gridtosurface.png" alt="Mesh Grid to Surface">
 
-    <p>Approaching this problem this way turns out to be a <em>terrible</em> idea. If you're smarter than me, then you can probably already see why. But since I'm not smarter than me, I had to barrel through this whole mess first to figure it out.</p>
+    <p>Approaching this problem this way turns out to be a <em>terrible</em> idea. If you're smarter than me, then you might already know why. If so, grab your popcorn for the train wreck, because I had to barrel through this mess first to figure it out.</p>
 
     <p>First, we need to figure out a formula for \(z\) that depends on \(x\) and \(y\). Since we're graphing the unit ball for variable \(p\), our points \((x, y, z)\) are going to have to satisfy \(\|(x, y, z)\|_p = 1\). So, we pull out the definition of the \(p\)-norm and do some minor rearrangements.</p>
     <p class="math">
@@ -108,11 +108,12 @@
       \]
     </p>
 
-    <p>Great!! So, the plan is to generate a grid of \(x\) and \(y\) values ranging from -1 to 1, then calculate the positive \(z\)-value for any \((x, y)\) pair. If some \((x,y)\) pair is outside of our boundary (i.e., \(x\) and \(y\) are large enough that there's no \(z\) such that \(|x|^p + |y|^p + |z|^p = 1\)), then we'll just let the \(z\) value for that point be NaN, and our graphing utility will ignore it. We expect our points will look something like this (in the \(p = 2\) case):</p>
+    <p>Great! So, the plan is to generate a grid of \(x\) and \(y\) values ranging from -1 to 1, then calculate the positive \(z\)-value for any \((x, y)\) pair. If some \((x,y)\) pair is outside of our boundary (i.e., \(x\) and \(y\) are large enough that there's no \(z\) such that \(|x|^p + |y|^p + |z|^p = 1\)), then we'll just let the \(z\) value for that point be NaN, and our graphing utility will ignore it. We expect our points will look something like this (in the \(p = 2\) case):</p>
 
     <img class="center" src="img/method1idea.png" alt="Idea Behind Method 1">
 
-    <p>Then when we're done, we'll just duplicate our valid points with negative \(z\)-values to fill out the bottom hemisphere.</p>
+    <p>Then when we're done, we'll just duplicate our valid points with negative \(z\)-values to fill out the bottom hemisphere.*</p>
+    <p><em>*(Folks who know where this is going are probably screaming and clutching their hair at this line. I personally mutter "hubris" to myself every time I read it.)</em></p>
 
     <pre><code># Import necessary libraries
 import numpy as np
@@ -167,7 +168,9 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <p>For a bit, I was pretty obstinate about the fact it half-worked.</p>
 
-    <p>The unit ball is perfectly symmetrical with regards to each of the axes, so I figured if I layered a bunch of <em>half-working</em> things over each other in the right way, I could probably get something that <em>full-worked!</em></p>
+    <p>The unit ball is perfectly symmetrical with regards to each of the axes, so I figured if I layered a bunch of <em>half-working</em> things over each other in the right way, I could probably get something that <em>full-worked!*</em></p>
+
+    <p><em>*(I know. I'm sorry.)</em></p>
 
     <pre><code>def coords_patchwork(p):
 
@@ -226,7 +229,7 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <p>So, apparently plotting surfaces is like laying shingles: it has to be done in a systematic fashion. We can't just toss down points in any order we want—we need to move methodically through space, connecting points of our surface as we progress. Moreover, we want the same granularity in the \(z\) direction as in the \(x\) and \(y\) directions.</p>
 
-    <p>This calls for something parametric. Time to roll up the sleeves and break out every vector calc student's worst nightmare.</p>
+    <p>This calls for something parametric. Time to roll up our sleeves and break out every vector calc student's worst nightmare.</p>
   </section>
 
   <section>
@@ -246,7 +249,7 @@ fig.update_layout(showlegend=False)</code></pre>
       \]
     </p>
 
-    <p>Parametrically generating a surface plot isn't that different from non-parametrically generating one. Instead of creating a mesh grid of \((x, y)\) values, we create a mesh grid of \((\theta, \varphi)\) values. We find an expression for \(r\) based on \(\theta\) and \(\varphi\) and then transform our \(\theta\) and \(\varphi\) arrays into \(x\), \(y\), and \(z\) arrays by the above equations. In this way, we'll move down our surface in \(\varphi\)-bands, where for each fixed value of \(\varphi\), we lay down points in a counterclockwise loop around our surface by varying \(\theta\).</p>
+    <p>Parametrically generating a surface plot isn't that different from non-parametrically generating one. Instead of creating a mesh grid of \((x, y)\) values, we create a mesh grid of \((\theta, \varphi)\) values. We find an expression for \(r\) based on \(\theta\) and \(\varphi\) and then transform our \(\theta\) and \(\varphi\) arrays into \(x\), \(y\), and \(z\) arrays by the above equations. In this way, we'll move down our surface in \(\varphi\)-bands, where for each fixed value of \(\varphi\), we lay down points in a counterclockwise loop around our surface by varying \(\theta.\)</p>
 
     <p>So, now all we need is an expression for \(r\).</p>
 
@@ -293,7 +296,7 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <p>My first thought was that maybe we were encountering numerical rounding errors with sine and cosine. I tried bumping up the number of steps in the mesh grid and switching to a symbolic library, but even this doesn't fix the problem: it actually makes it more pronounced.</p>
 
-    <p>Instead, the issue becomes clear when we look at the \(\varphi\)-bands for \(p = 100\), which essentially form the skeleton of our surface.</p>
+    <p>Instead, the issue becomes clear when we look at the \(\varphi\)-bands for \(p = 100\), which essentially form the skeleton of our surface—that is, the lines along which the program "connects the dots" when drawing the surface.</p>
 
     <img class="center" src="img/sphericalskeleton.png" alt="Skeleton of p = 100 for spherical coords">
 
@@ -357,11 +360,11 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <p>Oh my God. Why does it have a weird spot on top of it?</p>
 
-    <p>I mean, that worked <em>better</em> than spherical coordinates did—it's legitimately <em>almost</em> good. Let's see what's going on with the skeletons.</p>
+    <p>I mean, that worked better than spherical coordinates did—it's legitimately <em>almost</em> good. Let's see what's going on with the skeletons.</p>
 
     <img class="center" src="img/cylindricalskeleton.png" alt="Skeletons for cylindrical coords">
 
-    <p>Okay. What's happening here is we're running into one of the same issues we had with the first method, just in a slightly different format. While before we had trouble picking up \(z\) values close to 0, now we're struggling to capture them close to 1 and -1. This results in these sort of cap-less objects for large \(p\), where our surface leaps and stretches from a faraway band defined by \(z = 1 - \varepsilon\) to cluster and pile up at the point \((x, y, z) = (0, 0, 1)\).</p>
+    <p>Okay. What's happening here is we're running into one of the same issues we had with the first method, just in a slightly different format. While before we had trouble picking up \(z\) values close to 0, now we're struggling to capture them close to 1 and -1. This results in these sort of cap-less objects for large \(p\), where our surface leaps and stretches from a faraway band defined by \(z = 1 - \varepsilon\) to cluster and pile up at the point \((x, y, z) = (0, 0, 1)\) thanks to rounding error.</p>
 
     <p>But, our previous problem of the wobbly edges <em>has</em> been fixed! We just need a way to make our skeleton look more uniform. Ideally, the horizontal bands of our skeleton will look equally spaced <em>along</em> the surface of the unit ball, rather than simply being equally spaced in the \(z\)-direction.</p>
   </section>
@@ -379,7 +382,9 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <p>Some of these \(z\)-values are going to be very close together (or the same, due to rounding), and some will be very far apart, but the overall effect should be that they appear (basically) uniformly spaced along the surface of our object when paired with their \(\varphi\) value. </p>
 
-    <p>The \(r_*\) we refer to below is a function of \(\varphi\) and is refering to the distance from a point \((x, 0, z)\) on our surface to the origin. We compute it to find our \(z\)-values.</p>
+    <p>The \(r_*\) we refer to below is a function of \(\varphi\) and is refering to the distance from a point \((x, 0, z)\) on our surface to the origin. (Unfortunately for the traditionalists out there—and fortunately for the dyslexics—I don't hate myself enough to use \(\rho, \varphi\) and \(p\) in the same room.)</p>
+
+    <p>We compute \(r_*\) in order to find our \(z\)-values. </p>
 
     <p class="math">
       \[
@@ -468,12 +473,16 @@ fig.update_layout(showlegend=False)</code></pre>
     	<div id="plot-container"><div id='plot'></div></div>
     </div>
 
+    <p>By Kayden Mimmack, 2019.</p>
+    
+    <p>Want to hire me? Check out my <a href="http://mimmackk.github.io">portfolio</a> (including other math visualization projects) or connect with me on <a href="https://www.linkedin.com/in/kjmimmack/">LinkedIn</a>.</p>
+
   </section>
 
   <section>
     <h2>Appendix</h2>
 
-    <p>Final Python functions for 2D and 3D unit balls (on <a href="https://github.com/mimmackk/unitball/blob/master/unitball.py">Github</a>):</p>
+    <p>Final Python functions for 2D and 3D unit balls (on <a href="https://github.com/mimmackk/unitball/blob/master/unitball.py">GitHub</a>):</p>
 
     <pre><code>import numpy as np
 import plotly.graph_objects as go
@@ -537,9 +546,9 @@ def unitball2d(p, smoothness = 8):
 
   fig.show()</code></pre>
 
-    <p>As a quick note, you could take advantage of the symmetry of this problem a lot more than I did here. We don't actually need to calculate \(x,y\) values for \(\theta \in [0, 2\pi]\); we only need to take \(\theta\) up to \(\pi/4\). We can then intelligently stack our resulting \(x\) and \(y\) values to fill out the entire \(x\)-\(y\) plane (similarly for \(z\) and \(\varphi\)). When I gave this a try, though, on my system at least, this didn't turn out to be any faster. Since we're not working with very many data points to begin with (we don't want to make our graph too slow, and we only need so much resolution to accurately visualize our object), it took longer for my system to do all the necessary gluing-together than to let numpy do its efficient large-matrix computations.</p>
+  <p>As a quick note, you could take advantage of the symmetry of this problem a lot more than I did here. We don't actually need to calculate \(x,y\) values for \(\theta \in [0, 2\pi]\); we only need to take \(\theta\) up to \(\pi/4\). We can then intelligently stack our resulting \(x\) and \(y\) values to fill out the entire \(x\)-\(y\) plane (similarly for \(z\) and \(\varphi\)). When I gave this a try, though, on my system at least, this didn't turn out to be any faster. Since we're not working with very many data points to begin with (we don't want to make our graph too slow, and we only need so much resolution to accurately visualize our object), it took longer for my system to do all the necessary gluing-together than to let numpy do its efficient large-matrix computations.</p>
 
-    <p>By Kayden Mimmack, 2019</p>
+  <p>Additionally, the final interactive visualization given above is actually in JavaScript—I roughly translated it from the Python code in order to have a nice little thing to play with online. The code's not pretty, but if you want to look at the JavaScript version, it's on <a href="https://github.com/mimmackk/unitball/blob/master/live.js">GitHub</a> too.</p>
 
   </section>
 </article>
