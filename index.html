@@ -69,7 +69,7 @@
 
     <p>Why?</p>
 
-    <p>Well, a mathematician would say that once we understand an object in 1 dimension and in 2 dimensions, then we understand it in <em>all</em> dimensions, and so examining \(\mathbb R^3\) is redundant, at best. I say pictures are fun and interesting, and nobody learning a new mathematical concept has ever wished for <em>fewer</em> pictures. So, here's what the 3-dimensional unit ball looks like for various values of \(p\):</p>
+    <p>Well, a mathematician would say that once we understand an object in 1 dimension and in 2 dimensions, then we understand it in <em>all</em> dimensions, and so examining \(\mathbb R^3\) is redundant, at best. I say pictures are fun and interesting, and nobody learning a new mathematical concept has ever wished for fewer pictures. So, here's what the 3-dimensional unit ball looks like for various values of \(p\):</p>
 
     <img class="center" src="img/animation3d.gif" alt="Animated 3D Unit Ball">
 
@@ -113,7 +113,7 @@
     <img class="center" src="img/method1idea.png" alt="Idea Behind Method 1">
 
     <p>Then when we're done, we'll just duplicate our valid points with negative \(z\)-values to fill out the bottom hemisphere.*</p>
-    <p><em>*(Folks who know where this is going are probably screaming and clutching their hair at this line. I personally mutter "hubris" to myself every time I read it.)</em></p>
+    <p><em>*(For the folks who know where this is going—sorry for the migraine.)</em></p>
 
     <pre><code># Import necessary libraries
 import numpy as np
@@ -162,15 +162,13 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <img class="center" src="img/m1surfaces.png" alt="Graphs of Method 1">
 
-    <p>That . . . <em>almost</em> worked. The graph seems accurate wherever it exists—the problem is the places where it doesn't. \(p = 100\) is almost comical.</p>
+    <p>That . . . almost worked. The graph seems accurate wherever it exists—the problem is the places where it doesn't. \(p = 100\) is almost comical.</p>
 
     <h3>Method 1.1: A Bad Addendum to a Bad Idea</h3>
 
     <p>For a bit, I was pretty obstinate about the fact it half-worked.</p>
 
-    <p>The unit ball is perfectly symmetrical with regards to each of the axes, so I figured if I layered a bunch of <em>half-working</em> things over each other in the right way, I could probably get something that <em>full-worked!*</em></p>
-
-    <p><em>*(I know. I'm sorry.)</em></p>
+    <p>The unit ball is perfectly symmetrical with regards to each of the axes, so I figured if I layered a bunch of <em>half-working</em> things over each other in the right way, I could probably get something that <em>full-worked!</em></p>
 
     <pre><code>def coords_patchwork(p):
 
