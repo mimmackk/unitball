@@ -69,17 +69,15 @@
 
     <p>Why?</p>
 
-    <p>Well, a mathematician would say that once we understand an object in 1 dimension and in 2 dimensions, then we understand it in <em>all</em> dimensions, and so examining \(\mathbb R^3\) is redundant, at best. I say pictures are fun and interesting, and nobody learning a new mathematical concept has ever wished for fewer pictures. So, here's what the 3-dimensional unit ball looks like for various values of \(p\):</p>
+    <p>Well, a mathematician would say that once we understand an object in 1 dimension and in 2 dimensions, then we understand it in all dimensions, and so examining \(\mathbb R^3\) is redundant. I say pictures are fun and interesting, and nobody has ever wished for fewer pictures. So, here's what the 3-dimensional unit ball looks like for various values of \(p\):</p>
 
     <img class="center" src="img/animation3d.gif" alt="Animated 3D Unit Ball">
 
-    <p>Perhaps one reason the 3D unit ball isn't visualized often is that it's a pain in the ass to graph.</p>
+    <p>Perhaps one reason the 3D unit ball isn't visualized often is that doing so isn't trivial. Not by a long shot.</p>
 
-    <p>Sure—graphing a sphere isn't hard, graphing a cube isn't hard, and graphing an octahedron isn't hard. But apparently graphing all three and every continuous visual representation between them with one function is the opposite of "not hard."</p>
+    <p>Sure, graphing a sphere isn't hard, graphing a cube isn't hard, and graphing an octahedron isn't hard. But apparently graphing all three and every continuous visual representation between them with one function is the opposite of not hard.</p>
 
-    <p>In 2D, you can just dust off the trusty 'ol polar coords, wipe your hands, and call it a day. But wow, is this <em>not</em> trivial in 3D.</p>
-
-    <p>I'm going to walk through my problem solving process below—I'll talk about each method I tried, why I thought it would work, why it didn't work, and how I eventually solved this problem (if problems in computer science can ever truly be considered "solved").</p>
+    <p>I'm going to walk through my problem solving process below—I'll talk about each method I tried, why I thought it would work, why it didn't work, and how I eventually arrived at a solution that worked.</p>
   </section>
 
   <section>
@@ -89,7 +87,7 @@
 
     <img class="center" src="img/gridtosurface.png" alt="Mesh Grid to Surface">
 
-    <p>Approaching this problem this way turns out to be a <em>terrible</em> idea. If you're smarter than me, then you might already know why. If so, lean back and enjoy the train wreck, because unfortunately I had to barrel through this whole mess first to figure it out.</p>
+    <p>Approaching this problem this way turns out to be a terrible idea. Here's why.</p>
 
     <p>First, we need to figure out a formula for \(z\) that depends on \(x\) and \(y\). Since we're graphing the unit ball for variable \(p\), our points \((x, y, z)\) are going to have to satisfy \(\|(x, y, z)\|_p = 1\). So, we pull out the definition of the \(p\)-norm and do some minor rearrangements.</p>
     <p class="math">
@@ -108,14 +106,13 @@
       \]
     </p>
 
-    <p>Great! So, the plan is to generate a grid of \(x\) and \(y\) values ranging from -1 to 1, then calculate the positive \(z\)-value for any \((x, y)\) pair. If some \((x,y)\) pair is outside of our boundary (i.e., \(x\) and \(y\) are large enough that there's no \(z\) such that \(|x|^p + |y|^p + |z|^p = 1\)), then we'll just let the \(z\) value for that point be NaN, and our graphing utility will ignore it. We expect our points will look something like this (in the \(p = 2\) case):</p>
+    <p>Great — the plan is to generate a grid of \(x\) and \(y\) values ranging from -1 to 1, then calculate the positive \(z\)-value for any \((x, y)\) pair. If some \((x,y)\) pair is outside of our boundary (i.e., \(x\) and \(y\) are large enough that there's no \(z\) such that \(|x|^p + |y|^p + |z|^p = 1\)), then we'll just let the \(z\) value for that point be NaN, and our graphing utility will ignore it. We expect our points will look something like this (in the \(p = 2\) case):</p>
 
     <img class="center" src="img/method1idea.png" alt="Idea Behind Method 1">
 
-    <p>Then when we're done, we'll just duplicate our valid points with negative \(z\)-values to fill out the bottom hemisphere.*</p>
-    <p><em>*(For the folks who know where this is going—sorry for the migraine.)</em></p>
+    <p>Then when we're done, we'll just duplicate our valid points with negative \(z\)-values to fill out the bottom hemisphere.</p>
 
-    <pre><code># Import necessary libraries
+    <!-- <pre><code># Import necessary libraries
 import numpy as np
 import plotly.graph_objects as go
 import ipywidgets as widgets
@@ -158,7 +155,7 @@ fig = go.Figure(go.Surface(
     colorscale='Viridis',
     showscale=False
     ))
-fig.update_layout(showlegend=False)</code></pre>
+fig.update_layout(showlegend=False)</code></pre> -->
 
     <img class="center" src="img/m1surfaces.png" alt="Graphs of Method 1">
 
@@ -168,9 +165,9 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <p>For a bit, I was pretty obstinate about the fact it half-worked.</p>
 
-    <p>The unit ball is perfectly symmetrical with regards to each of the axes, so I figured if I layered a bunch of <em>half-working</em> things over each other in the right way, I could probably get something that <em>full-worked!</em></p>
+    <p>The unit ball is perfectly symmetrical with regards to each of the axes, so I figured if I layered a bunch of half-working things over each other in the right way, I could probably get something that full-worked!</p>
 
-    <pre><code>def coords_patchwork(p):
+    <!-- <pre><code>def coords_patchwork(p):
 
     X, Y, Z = coords(p)
 
@@ -179,21 +176,15 @@ fig.update_layout(showlegend=False)</code></pre>
     Y = np.hstack((Y, X, Z))
     Z = np.hstack((Z, Y, X))
 
-    return (X, Y, Z)</code></pre>
-
-    <p>. . . That's not how it worked.</p>
+    return (X, Y, Z)</code></pre> -->
 
     <img class="center" src="img/m11surfaces.png" alt="Graphs of Method 1.1">
 
-    <p>Look at this.</p>
-
-    <p>Look at \(p = 100\).</p>
-
-    <p>Look at the surface of \(p = 1\).</p>
+    <p>That's not how it worked.</p>
 
     <img class="center" src="img/m11p1.png" alt="Surface of p = 1 for method 1.1">
 
-    <p>It's ugly, it's choppy, it's glitchy—it's disgusting. The edges of the patchworked surfaces are causing that jittery image for low \(p\), and for large \(p\), open gaps are still showing up around the edges. </p>
+    <p>Look at this. It's ugly, it's choppy, it's glitchy—it's disgusting. The edges of the patchworked surfaces cause a jittery image for low \(p\), and for large \(p\), open gaps still appear around the edges. </p>
 
     <h3> Why isn't it working?</h3>
 
@@ -221,19 +212,19 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <p>In this image, since \(y\) is just a little larger than 0, we don't pick up the point \(x = 1\), since \(1^p + \varepsilon^p > 1\), and so no \(z\)-value exists such that \((1, \varepsilon, z)\) is on the surface of our unit ball. So, we jump from NaN to a very large \(z\) value when we increment \(x\), completely skipping past the exact curvature we want to visualize. </p>
 
-    <p>So, no matter our step size, after a certain \(p\)-value, we're not picking up any of the fine detail of our edges. We're always chopping off essential information, making entire sides of our object flat when they shouldn't be. Take the case \(p = 1.5\), for example: the corners of our object around \(z = 0\) <em>should</em> be pretty pointy. But even if we've solved our connectivity issue, we would still end up with some object that looks like it's been filed flat around its equator. This method loses detail exactly where we need it most.</p>
+    <p>So, no matter our step size, after a certain \(p\)-value, we're not picking up any of the fine detail of our edges. We're always chopping off essential visual information, making entire sides of our object flat when they shouldn't be. Take the case \(p = 1.5\), for example: the corners of our object around \(z = 0\) <em>should</em> be pretty pointy. But even if we've solved our connectivity issue, we would still end up with some object that looks like it's been filed flat around its equator. This method loses detail exactly where we need it most.</p>
 
     <h3>Next step?</h3>
 
     <p>So, apparently plotting surfaces is like laying shingles: it has to be done in a systematic fashion. We can't just toss down points in any order we want—we need to move methodically through space, connecting points of our surface as we progress. Moreover, we want the same granularity in the \(z\) direction as in the \(x\) and \(y\) directions.</p>
 
-    <p>This calls for something parametric. Time to roll up our sleeves and break out every vector calc student's worst nightmare.</p>
+    <p>This calls for something parametric.</p>
   </section>
 
   <section>
     <h2>Method 2: Spherical Coordinates</h2>
 
-    <p>If \(\varphi\) is the vertical angle of a point from the posive \(z\)-axis, \(\theta\) is the horizontal angle from the positive \(x\)-axis, and \(r\) describes the distance from our point to the origin, then any point \((x, y, z)\) can be equivalently described with spherical coordinates \((\varphi, \theta, r)\):</p>
+    <p>As a brief refresher, if \(\varphi\) is the vertical angle of a point from the posive \(z\)-axis, \(\theta\) is the horizontal angle from the positive \(x\)-axis, and \(r\) describes the distance from our point to the origin, then any point \((x, y, z)\) can be equivalently described with spherical coordinates \((\varphi, \theta, r)\):</p>
 
     <img class="center" src="img/spherical.png" alt="Spherical Coordinates">
 
@@ -266,7 +257,7 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <p>Now that we have an \(r\) for every \(\varphi\) and \(\theta\), we can easily convert to Cartesian and get our \(x\), \(y\), and \(z\) points.</p>
 
-    <pre><code>def coords_spherical(p):
+    <!-- <pre><code>def coords_spherical(p):
 
     # Grid of phi and theta values
     theta = np.linspace(0, np.pi * 2, num_steps)
@@ -282,13 +273,13 @@ fig.update_layout(showlegend=False)</code></pre>
     y = r * np.sin(phi) * np.sin(theta)
     z = r * np.cos(phi)
 
-    return (x, y, z)</code></pre>
+    return (x, y, z)</code></pre> -->
 
     <img class="center" src="img/m2surfaces.png" alt="Graphs of Method 1">
 
-    <p>Awesome! Who would've thought—spherical coordinates are perferct for graphing spheres!</p>
+    <p>Who would've thought spherical coordinates are perferct for graphing spheres?</p>
 
-    <p>Except . . . we start running into major issues with large \(p\). Check out \(p = 100\): the edges look strangely curly and serrated, when it should really resemble a soft-edged cube.</p>
+    <p>However, we start running into major issues with large \(p\). Check out \(p = 100\): the edges look strangely curly and serrated, when it should really resemble a soft-edged cube.</p>
 
     <h3>What's going on?</h3>
 
@@ -322,7 +313,7 @@ fig.update_layout(showlegend=False)</code></pre>
       \]
     </p>
 
-    <p>So, we'll generate our \(z\) values on their own, generate \(\theta\) values from \(0\) to \(2\pi\), then calculate \(r\) based on \(\theta\) and \(z\):</p>
+    <p>We'll generate \(z\) values from \(-1\) to \(1\), generate \(\theta\) values from \(0\) to \(2\pi\), then calculate \(r\) based on \(\theta\) and \(z\):</p>
 
     <p class="math">
       \[
@@ -337,7 +328,7 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <p>To finish, we just convert back to Cartesian coordinates.</p>
 
-    <pre><code>def coords_cylindrical(p):
+    <!-- <pre><code>def coords_cylindrical(p):
 
     # Generate theta and z values
     theta = np.linspace(0, np.pi * 2, num_steps)
@@ -352,19 +343,19 @@ fig.update_layout(showlegend=False)</code></pre>
     x = r * np.cos(theta)
     y = r * np.sin(theta)
 
-    return (x, y, z)</code></pre>
+    return (x, y, z)</code></pre> -->
 
     <img class="center" src="img/m3surfaces.png" alt="Graphs of Method 3">
 
     <p>Oh my God. Why does it have a weird spot on top of it?</p>
 
-    <p>I mean, that worked better than spherical coordinates did—it's legitimately <em>almost</em> good. Let's see what's going on with the skeletons.</p>
+    <p>That worked better than spherical coordinates did—it's legitimately <em>almost</em> good. Let's see what's going on with the skeletons.</p>
 
     <img class="center" src="img/cylindricalskeleton.png" alt="Skeletons for cylindrical coords">
 
-    <p>Okay. What's happening here is we're running into one of the same issues we had with the first method, just in a slightly different format. While before we had trouble picking up \(z\) values close to 0, now we're struggling to capture them close to 1 and -1. This results in these sort of cap-less objects for large \(p\), where our surface leaps and stretches from a faraway band defined by \(z = 1 - \varepsilon\) to cluster and pile up at the point \((x, y, z) = (0, 0, 1)\) thanks to rounding error.</p>
+    <p>It looks like we're running into one of the same issues we had with the first method, just in a slightly different format. While before we had trouble picking up \(z\) values close to 0, now we're struggling to capture them close to 1 and -1. This results in these sort of cap-less objects for large \(p\), where our surface leaps and stretches from a faraway band defined by \(z = 1 - \varepsilon\) to cluster and pile up at the point \((x, y, z) = (0, 0, 1)\) thanks to rounding error.</p>
 
-    <p>But, our previous problem of the wobbly edges <em>has</em> been fixed! We just need a way to make our skeleton look more uniform. Ideally, the horizontal bands of our skeleton will look equally spaced <em>along</em> the surface of the unit ball, rather than simply being equally spaced in the \(z\)-direction.</p>
+    <p>But, our previous problem of the wobbly edges <em>has</em> been fixed. We just need a way to make our skeleton look more uniform. Ideally, the horizontal bands of our skeleton will look equally spaced along the surface of the unit ball, rather than simply being equally spaced in the \(z\)-direction.</p>
   </section>
 
   <section>
@@ -440,7 +431,7 @@ fig.update_layout(showlegend=False)</code></pre>
       \]
     </p>
 
-    <pre><code>def coords_trick(p):
+    <!-- <pre><code>def coords_trick(p):
 
     theta = np.linspace(0, np.pi * 2, num_steps)
     phi   = np.linspace(0, np.pi,     num_steps)
@@ -454,7 +445,7 @@ fig.update_layout(showlegend=False)</code></pre>
     y = np.sin(phi) * rho(phi) * np.sin(theta) * rho(theta)
     z = np.cos(phi) * rho(phi)
 
-    return (x, y, z)</code></pre>
+    return (x, y, z)</code></pre> -->
 
     <img class="center" src="img/m4surfaces.png" alt="Graphs of Method 4">
 
@@ -464,7 +455,7 @@ fig.update_layout(showlegend=False)</code></pre>
 
     <p>Perfect! </p>
 
-    <p>We've finally found a way to graph the 3D unit ball in a way that's visually accurate for all valid values of p. Experiment with an interactive version below:</p>
+    <p>We've finally found a way to graph the 3D unit ball in a way that's visually accurate for all valid values of p. See the code in <a href="https://github.com/mimmackk/unitball/blob/master/unitball.py">Python</a> and <a href="https://github.com/mimmackk/unitball/blob/master/live.js">Javascript</a>, and experiment with an interactive version below:</p>
 
     <div class='interactive'>
       \(p = \) <input id="number" type="number" min="0.5" max="999" value = 2 step="any"></p></span>
@@ -477,7 +468,7 @@ fig.update_layout(showlegend=False)</code></pre>
 
   </section>
 
-  <section>
+  <!-- <section>
     <h2>Appendix</h2>
 
     <p>Final Python functions for 2D and 3D unit balls (on <a href="https://github.com/mimmackk/unitball/blob/master/unitball.py">GitHub</a>):</p>
@@ -548,7 +539,7 @@ def unitball2d(p, smoothness = 8):
 
   <p>Additionally, the final interactive visualization given above is actually translated into JavaScript in order to play nicely on the web. If you want to look at the JavaScript code, it's been written a little differently in order to prioritize quick dynamic updates. It's on <a href="https://github.com/mimmackk/unitball/blob/master/live.js">GitHub</a>.</p>
 
-  </section>
+  </section> -->
 </article>
 <script type="text/javascript" src="live.js"></script>
 </body>
