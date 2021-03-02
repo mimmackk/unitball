@@ -112,7 +112,7 @@
 
     <p>Then when we're done, we'll just duplicate our valid points with negative \(z\)-values to fill out the bottom hemisphere.</p>
 
-    <!-- <pre><code># Import necessary libraries
+    <pre><code># Import necessary libraries
 import numpy as np
 import plotly.graph_objects as go
 import ipywidgets as widgets
@@ -155,7 +155,7 @@ fig = go.Figure(go.Surface(
     colorscale='Viridis',
     showscale=False
     ))
-fig.update_layout(showlegend=False)</code></pre> -->
+fig.update_layout(showlegend=False)</code></pre>
 
     <img class="center" src="img/m1surfaces.png" alt="Graphs of Method 1">
 
@@ -167,7 +167,7 @@ fig.update_layout(showlegend=False)</code></pre> -->
 
     <p>The unit ball is perfectly symmetrical with regards to each of the axes, so I figured if I layered a bunch of half-working things over each other in the right way, I could probably get something that full-worked!</p>
 
-    <!-- <pre><code>def coords_patchwork(p):
+    <pre><code>def coords_patchwork(p):
 
     X, Y, Z = coords(p)
 
@@ -176,7 +176,7 @@ fig.update_layout(showlegend=False)</code></pre> -->
     Y = np.hstack((Y, X, Z))
     Z = np.hstack((Z, Y, X))
 
-    return (X, Y, Z)</code></pre> -->
+    return (X, Y, Z)</code></pre>
 
     <img class="center" src="img/m11surfaces.png" alt="Graphs of Method 1.1">
 
@@ -257,7 +257,7 @@ fig.update_layout(showlegend=False)</code></pre> -->
 
     <p>Now that we have an \(r\) for every \(\varphi\) and \(\theta\), we can easily convert to Cartesian and get our \(x\), \(y\), and \(z\) points.</p>
 
-    <!-- <pre><code>def coords_spherical(p):
+    <pre><code>def coords_spherical(p):
 
     # Grid of phi and theta values
     theta = np.linspace(0, np.pi * 2, num_steps)
@@ -273,7 +273,7 @@ fig.update_layout(showlegend=False)</code></pre> -->
     y = r * np.sin(phi) * np.sin(theta)
     z = r * np.cos(phi)
 
-    return (x, y, z)</code></pre> -->
+    return (x, y, z)</code></pre>
 
     <img class="center" src="img/m2surfaces.png" alt="Graphs of Method 1">
 
@@ -328,7 +328,7 @@ fig.update_layout(showlegend=False)</code></pre> -->
 
     <p>To finish, we just convert back to Cartesian coordinates.</p>
 
-    <!-- <pre><code>def coords_cylindrical(p):
+    <pre><code>def coords_cylindrical(p):
 
     # Generate theta and z values
     theta = np.linspace(0, np.pi * 2, num_steps)
@@ -343,7 +343,7 @@ fig.update_layout(showlegend=False)</code></pre> -->
     x = r * np.cos(theta)
     y = r * np.sin(theta)
 
-    return (x, y, z)</code></pre> -->
+    return (x, y, z)</code></pre>
 
     <img class="center" src="img/m3surfaces.png" alt="Graphs of Method 3">
 
@@ -431,7 +431,7 @@ fig.update_layout(showlegend=False)</code></pre> -->
       \]
     </p>
 
-    <!-- <pre><code>def coords_trick(p):
+    <pre><code>def coords_trick(p):
 
     theta = np.linspace(0, np.pi * 2, num_steps)
     phi   = np.linspace(0, np.pi,     num_steps)
@@ -445,7 +445,7 @@ fig.update_layout(showlegend=False)</code></pre> -->
     y = np.sin(phi) * rho(phi) * np.sin(theta) * rho(theta)
     z = np.cos(phi) * rho(phi)
 
-    return (x, y, z)</code></pre> -->
+    return (x, y, z)</code></pre>
 
     <img class="center" src="img/m4surfaces.png" alt="Graphs of Method 4">
 
@@ -468,7 +468,7 @@ fig.update_layout(showlegend=False)</code></pre> -->
 
   </section>
 
-  <!-- <section>
+  <section>
     <h2>Appendix</h2>
 
     <p>Final Python functions for 2D and 3D unit balls (on <a href="https://github.com/mimmackk/unitball/blob/master/unitball.py">GitHub</a>):</p>
@@ -539,7 +539,7 @@ def unitball2d(p, smoothness = 8):
 
   <p>Additionally, the final interactive visualization given above is actually translated into JavaScript in order to play nicely on the web. If you want to look at the JavaScript code, it's been written a little differently in order to prioritize quick dynamic updates. It's on <a href="https://github.com/mimmackk/unitball/blob/master/live.js">GitHub</a>.</p>
 
-  </section> -->
+  </section>
 </article>
 <script type="text/javascript" src="live.js"></script>
 </body>
